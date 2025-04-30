@@ -1,3 +1,6 @@
+import { Formation } from "./formation.model";
+import { User } from "./user.model";
+
 // src/app/core/models/document.model.ts
 export interface Document {
   id: number;
