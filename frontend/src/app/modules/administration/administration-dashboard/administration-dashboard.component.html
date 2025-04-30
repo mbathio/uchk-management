@@ -1,0 +1,46 @@
+<div class="admin-dashboard-container">
+  <div class="admin-header">
+    <h1>Tableau de bord d'administration</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des données...</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && !error" class="admin-sections-grid">
+    <mat-card 
+      *ngFor="let section of adminSections" 
+      [ngStyle]="{'background-color': section.color}"
+      class="admin-section-card"
+      [class.disabled]="!isAllowed(section)"
+      (click)="isAllowed(section) && router.navigate([section.route])"
+    >
+      <mat-card-header>
+        <mat-card-title>{{ section.title }}</mat-card-title>
+        <mat-card-subtitle>{{ section.description }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="admin-section-icon">
+          <mat-icon>{{ section.icon }}</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading && !error" class="dashboard-stats">
+    <div class="stat-card">
+      <mat-icon>description</mat-icon>
+      <span>Documents: {{ documentCount }}</span>
+    </div>
+    <div class="stat-card">
+      <mat-icon>notifications</mat-icon>
+      <span>Notifications non lues: {{ unreadNotificationsCount }}</span>
+    </div>
+  </div>
+</div>

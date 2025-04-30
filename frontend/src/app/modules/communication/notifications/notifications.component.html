@@ -1,0 +1,102 @@
+<!-- src/app/modules/communication/notifications/notifications.component.html -->
+<div class="notifications-container">
+  <mat-card class="notifications-header">
+    <mat-card-header>
+      <mat-card-title>Notifications</mat-card-title>
+      <mat-card-subtitle>
+        {{ totalNotifications }} notifications total
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions>
+      <mat-button-toggle-group 
+        (change)="filterNotifications($event.value)"
+        [value]="currentFilter"
+      >
+        <mat-button-toggle value="ALL">Toutes</mat-button-toggle>
+        <mat-button-toggle value="UNREAD">Non lues</mat-button-toggle>
+        <mat-button-toggle value="ARCHIVED">Archivées</mat-button-toggle>
+      </mat-button-toggle-group>
+      <button mat-raised-button color="primary" (click)="markAllAsRead()" *ngIf="notifications.length > 0">
+        Tout marquer comme lu
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <div class="notifications-list" *ngIf="!loading && !error">
+    <mat-card 
+      *ngFor="let notification of filteredNotifications" 
+      class="notification-card"
+      [class.unread]="notification.status === 'UNREAD'"
+    >
+      <mat-card-header>
+        <mat-card-title-group>
+          <mat-card-title>{{ notification.title }}</mat-card-title>
+          <mat-card-subtitle>
+            {{ notification.createdAt | date:'medium' }}
+          </mat-card-subtitle>
+          <mat-icon mat-card-avatar>{{ getNotificationIcon(notification) }}</mat-icon>
+        </mat-card-title-group>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p>{{ notification.content }}</p>
+        
+        <div class="notification-actions">
+          <button 
+            mat-icon-button 
+            color="primary" 
+            (click)="markAsRead(notification)"
+            *ngIf="notification.status === 'UNREAD'"
+            matTooltip="Marquer comme lu"
+          >
+            <mat-icon>done</mat-icon>
+          </button>
+          
+          <button 
+            mat-icon-button 
+            color="warn" 
+            (click)="deleteNotification(notification)"
+            matTooltip="Supprimer la notification"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+
+          <button 
+            mat-button 
+            *ngIf="notification.context?.entityId"
+            [routerLink]="['/communication/documents', notification.context?.entityId]"
+          >
+            Voir le détail
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-paginator 
+    [length]="totalNotifications"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 20, 50]"
+    (page)="onPageChange($event)"
+  ></mat-paginator>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && !error && filteredNotifications.length === 0" class="no-notifications">
+    <mat-icon>notifications_none</mat-icon>
+    <p>Aucune notification pour le moment</p>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <mat-card>
+      <mat-card-content>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="loadNotifications()">
+          Réessayer
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

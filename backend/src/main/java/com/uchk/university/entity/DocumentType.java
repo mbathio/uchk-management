@@ -1,0 +1,12 @@
+package com.uchk.university.entity;
+
+public enum DocumentType {
+    COMPTE_RENDU_REUNION,
+    COMPTE_RENDU_SEMINAIRE,
+    COMPTE_RENDU_WEBINAIRE,
+    CONSEIL_UNIVERSITE,
+    NOTE_SERVICE,
+    CIRCULAIRE,
+    NOTE_ADMINISTRATIVE,
+    AUTRE
+}

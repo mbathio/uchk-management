@@ -1,0 +1,163 @@
+/* src/app/modules/communication/dashboard/communication-dashboard.component.scss */
+@use "sass:color";
+
+// Color Variables
+$primary-color: #3498db;
+$secondary-color: #2ecc71;
+$accent-color: #e74c3c;
+$background-light: #f4f6f7;
+$text-primary: #2c3e50;
+$text-secondary: #6c757d;
+
+.communication-container {
+  background-color: $background-light;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.communication-header {
+  margin-bottom: 2rem;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba($primary-color, 0.1);
+  }
+
+  h1 {
+    color: $text-primary;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+
+  .dashboard-actions {
+    display: flex;
+    gap: 1rem;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  mat-icon {
+    font-size: 3rem;
+  }
+
+  p {
+    color: $text-secondary;
+    font-size: 1rem;
+  }
+}
+
+.communication-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.communication-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba($primary-color, 0.1);
+
+    mat-icon {
+      color: $primary-color;
+      font-size: 1.5rem;
+    }
+
+    h2 {
+      margin: 0;
+      color: $text-primary;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  mat-card-content {
+    padding: 1rem;
+  }
+
+  mat-list-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba($primary-color, 0.05);
+    }
+
+    .mat-line {
+      color: $text-secondary;
+    }
+  }
+
+  mat-card-actions {
+    padding: 1rem;
+    border-top: 1px solid rgba($primary-color, 0.1);
+  }
+}
+
+@media (max-width: 768px) {
+  .communication-container {
+    padding: 1rem;
+  }
+
+  .communication-header {
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .dashboard-actions {
+      width: 100%;
+      flex-direction: column;
+    }
+  }
+
+  .communication-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .communication-container {
+    padding: 0.5rem;
+  }
+
+  .communication-header h1 {
+    font-size: 1.5rem;
+  }
+}

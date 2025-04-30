@@ -1,0 +1,37 @@
+<!-- src/app/app.component.html - updated version -->
+<div class="container mt-4">
+  <nav
+    class="navbar navbar-expand-lg navbar-light bg-light"
+    *ngIf="!isLoginPage"
+  >
+    <a class="navbar-brand" href="#">UCHK</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item" *ngFor="let item of navItems">
+          <a class="nav-link" [routerLink]="item.route">
+            <mat-icon>{{ item.icon }}</mat-icon>
+            {{ item.label }}
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="currentUser$ | async">
+          <a class="nav-link" href="#" (click)="logout()">Déconnexion</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="content mt-4">
+    <router-outlet></router-outlet>
+  </div>
+</div>
