@@ -3,36 +3,27 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
 
-// Import routes
-import { routes } from './app.routes';
-
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
-import { ErrorInterceptor } from './core/interceptors/error.interceptor';
+import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
-import { PageNotFoundComponent } from './core/components/page-not-found/page-not-found.component';
-import { DocumentTypePipe } from './modules/communication/pipes/document-type.pipe';
-import { VisibilityLevelPipe } from './modules/communication/pipes/visibility-level.pipe';
+import { AuthInterceptor } from './core/http/auth.interceptor';
 
 @NgModule({
   declarations: [
-    DocumentTypePipe,
-    VisibilityLevelPipe
+    AppComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    SharedModule,
-    RouterModule.forRoot(routes),
-    AppComponent,
-    PageNotFoundComponent
+    AppRoutingModule,
+    CoreModule,
+    SharedModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

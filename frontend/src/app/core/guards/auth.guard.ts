@@ -1,27 +1,21 @@
 // src/app/core/guards/auth.guard.ts
-import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
-import { Role } from '../models/user.model';
+import { Injectable } from '@angular/core';
+import { CanActivate, Router, UrlTree } from '@angular/router';
+import { Observable } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
 
-  if (!authService.isLoggedIn()) {
-    router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-    return false;
-  }
-
-  // Check if the route requires specific roles
-  const requiredRoles = route.data?.['roles'] as Role[];
-  if (requiredRoles && requiredRoles.length > 0) {
-    if (!authService.hasRole(requiredRoles)) {
-      // If the user doesn't have the required role, redirect to the dashboard
-      router.navigate(['/dashboard']);
-      return false;
+  canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    if (this.authService.isAuthenticated()) {
+      return true;
     }
+    
+    // Rediriger vers la page de connexion si non authentifié
+    return this.router.createUrlTree(['/login']);
   }
-
-  return true;
-};
+}

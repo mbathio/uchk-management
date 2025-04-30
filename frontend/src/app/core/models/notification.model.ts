@@ -1,18 +1,11 @@
+import { User } from "./user.model";
+
 // src/app/core/models/notification.model.ts
-import { User } from './user.model';
-
-export enum NotificationType {
-  INFO = 'INFO',
-  WARNING = 'WARNING',
-  ALERT = 'ALERT',
-  SUCCESS = 'SUCCESS'
-}
-
 export interface Notification {
-  id?: number; // Optional id
+  id: number;
+  user: User;
   message: string;
-  type: NotificationType;
+  type: string;
   read: boolean;
-  createdAt: Date;
-  recipient?: User; // Optional reference to the user who receives the notification
+  createdAt: string;
 }

@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { AuthService } from './core/auth/auth.service';
+import { AuthService } from './core/authentification/auth.service';
 import { Observable } from 'rxjs';
 import { User, Role } from './core/models/user.model';
 import { CommonModule } from '@angular/common';

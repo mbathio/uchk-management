@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService } from '../../../core/authentification/auth.service';
 import { User } from '../../../core/models/user.model';
 import { Observable } from 'rxjs';
 

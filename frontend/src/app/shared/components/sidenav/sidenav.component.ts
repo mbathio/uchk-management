@@ -5,7 +5,7 @@ import { RouterModule, Router } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService } from '../../../core/authentification/auth.service';
 import { Role } from '../../../core/models/user.model';
 import { User } from '../../../core/models/user.model'; // Assuming User model is defined here
 

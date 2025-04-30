@@ -3,7 +3,7 @@ import { AppComponent } from './app.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { SidenavComponent } from './shared/components/sidenav/sidenav.component';
-import { AuthService } from './core/auth/auth.service';
+import { AuthService } from './core/authentification/auth.service';
 import { of } from 'rxjs';
 
 describe('AppComponent', () => {

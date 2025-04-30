@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HeaderComponent } from '../header/header.component';
 import { SidenavComponent } from '../sidenav/sidenav.component';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService } from '../../../core/authentification/auth.service';
 import { NavItem } from '../sidenav/sidenav.component';
 import { Role } from '../../../core/models/user.model';
 
