@@ -135,4 +135,14 @@ public class FormationService {
             throw new IllegalArgumentException("Formation end date must be after start date");
         }
     }
+
+    public void assignStaffToFormation(Long formationId, Long staffId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assignStaffToFormation'");
+    }
+
+    public void removeStaffFromFormation(Long formationId, Long staffId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removeStaffFromFormation'");
+    }
 }

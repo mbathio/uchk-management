@@ -1,115 +1,96 @@
 package com.uchk.university.controller;
 
+import com.uchk.university.dto.FormationDto;
 import com.uchk.university.entity.Formation;
-import com.uchk.university.entity.Staff;
-import com.uchk.university.entity.Student;
 import com.uchk.university.service.FormationService;
-import com.uchk.university.service.StaffService;
-import com.uchk.university.service.StudentService;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/formations")
+@RequestMapping("/formations")
 @RequiredArgsConstructor
+@Tag(name = "Formation Management", description = "API endpoints for formation management")
 public class FormationController {
+    
     private final FormationService formationService;
-    private final StaffService staffService;
-    private final StudentService studentService; // Added to properly implement my-formation endpoint
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Formation> getFormationById(@PathVariable Long id) {
-        return ResponseEntity.ok(formationService.getFormationById(id));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Formation>> getAllFormations() {
-        return ResponseEntity.ok(formationService.getAllFormations());
-    }
-
-    @GetMapping("/type/{type}")
-    public ResponseEntity<List<Formation>> getFormationsByType(@PathVariable String type) {
-        return ResponseEntity.ok(formationService.getFormationsByType(type));
-    }
-
-    @GetMapping("/level/{level}")
-    public ResponseEntity<List<Formation>> getFormationsByLevel(@PathVariable String level) {
-        return ResponseEntity.ok(formationService.getFormationsByLevel(level));
-    }
-
-    // Implement my-formation endpoint for students
-    @GetMapping("/my-formation")
-    @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<Formation> getMyFormation() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        
-        // Get student's formation by username
-        Student student = studentService.getStudentByUsername(username);
-        if (student != null && student.getCurrentFormation() != null) {
-            return ResponseEntity.ok(student.getCurrentFormation());
-        }
-        
-        return ResponseEntity.notFound().build();
-    }
-
-    // Implement schedule endpoint with proper authorization
-    @GetMapping("/{id}/schedule")
-    public ResponseEntity<List<Object>> getFormationSchedule(@PathVariable Long id) {
-        // Verify formation exists
-        Formation formation = formationService.getFormationById(id);
-        
-        // Call service to get schedule (implementation needed)
-        // For now, return empty list
-        return ResponseEntity.ok(Collections.emptyList());
-    }
-
-    // Implement trainers endpoint with proper authorization
-    @GetMapping("/{id}/trainers")
-    public ResponseEntity<List<Staff>> getFormationTrainers(@PathVariable Long id) {
-        // Verify formation exists
-        Formation formation = formationService.getFormationById(id);
-        
-        // Get trainers for this formation
-        List<Staff> trainers = staffService.getTrainersByFormationId(id);
-        return ResponseEntity.ok(trainers);
-    }
-
+    
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
-    public ResponseEntity<Formation> createFormation(@Valid @RequestBody Formation formation) {
-        // Input validation beyond @Valid annotations
-        if (formation.getName() == null || formation.getName().trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(formationService.createFormation(formation));
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'FORMATION_MANAGER')")
+    @Operation(summary = "Create a new formation", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Formation> createFormation(@RequestBody FormationDto formationDto) {
+        Formation formation = formationService.createFormation(formationDto);
+        return new ResponseEntity<>(formation, HttpStatus.CREATED);
     }
-
+    
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get formation by ID", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Formation> getFormationById(@PathVariable Long id) {
+        Formation formation = formationService.getFormationById(id);
+        return ResponseEntity.ok(formation);
+    }
+    
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get all formations", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<List<Formation>> getAllFormations() {
+        List<Formation> formations = formationService.getAllFormations();
+        return ResponseEntity.ok(formations);
+    }
+    
+    @GetMapping("/type/{type}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get formations by type", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<List<Formation>> getFormationsByType(@PathVariable String type) {
+        List<Formation> formations = formationService.getFormationsByType(type);
+        return ResponseEntity.ok(formations);
+    }
+    
+    @GetMapping("/level/{level}")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get formations by level", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<List<Formation>> getFormationsByLevel(@PathVariable String level) {
+        List<Formation> formations = formationService.getFormationsByLevel(level);
+        return ResponseEntity.ok(formations);
+    }
+    
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
-    public ResponseEntity<Formation> updateFormation(@PathVariable Long id, @Valid @RequestBody Formation formation) {
-        // Prevent ID mismatch attacks
-        if (!id.equals(formation.getId()) && formation.getId() != null) {
-            return ResponseEntity.badRequest().build();
-        }
-        
-        return ResponseEntity.ok(formationService.updateFormation(id, formation));
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'FORMATION_MANAGER')")
+    @Operation(summary = "Update a formation", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Formation> updateFormation(@PathVariable Long id, @RequestBody FormationDto formationDto) {
+        Formation formation = formationService.updateFormation(id, formationDto);
+        return ResponseEntity.ok(formation);
     }
-
+    
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'FORMATION_MANAGER')")
+    @Operation(summary = "Delete a formation", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Void> deleteFormation(@PathVariable Long id) {
         formationService.deleteFormation(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PostMapping("/{formationId}/assign-staff/{staffId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'FORMATION_MANAGER')")
+    @Operation(summary = "Assign staff to formation", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Void> assignStaffToFormation(@PathVariable Long formationId, @PathVariable Long staffId) {
+        formationService.assignStaffToFormation(formationId, staffId);
+        return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping("/{formationId}/remove-staff/{staffId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'FORMATION_MANAGER')")
+    @Operation(summary = "Remove staff from formation", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<Void> removeStaffFromFormation(@PathVariable Long formationId, @PathVariable Long staffId) {
+        formationService.removeStaffFromFormation(formationId, staffId);
+        return ResponseEntity.ok().build();
     }
 }
