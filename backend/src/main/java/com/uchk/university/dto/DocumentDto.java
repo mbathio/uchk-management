@@ -1,31 +1,42 @@
 package com.uchk.university.dto;
 
-import com.uchk.university.entity.DocumentType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DocumentDto {
+    
     private Long id;
     
-    @NotBlank(message = "Le titre ne peut pas être vide")
-    @Size(max = 255, message = "Le titre ne peut pas dépasser 255 caractères")
+    @NotBlank(message = "Title is required")
+    @Size(max = 200, message = "Title must not exceed 200 characters")
     private String title;
     
-    @Size(max = 1000, message = "La description ne peut pas dépasser 1000 caractères")
+    @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;
     
-    @NotNull(message = "Le type de document est obligatoire")
-    private DocumentType type;
+    private String filePath;
     
-    @NotBlank(message = "Le niveau de visibilité est obligatoire")
-    private String visibilityLevel;
+    private String fileName;
     
-    // Pas de champs pour le fichier car il sera transmis séparément dans la requête multipart
+    @NotBlank(message = "Type is required")
+    @Size(max = 50, message = "Type must not exceed 50 characters")
+    private String type;
+    
+    @NotNull(message = "Visibility level is required")
+    private Integer visibilityLevel;
+    
+    private Long creatorId;
+    
+    private List<Long> formationIds;
 }

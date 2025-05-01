@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +30,6 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
-    private final NotificationService notificationService;
 
     @Value("${document.upload.dir}")
     private String uploadDir;
@@ -92,7 +90,7 @@ public class DocumentServiceImpl implements DocumentService {
         // Update fields
         document.setTitle(updatedDocument.getTitle());
         document.setDescription(updatedDocument.getDescription());
-        document.setType(updatedDocument.getType());
+        document.setType(updatedDocument.getType()); // Ensure this is a DocumentType
         document.setVisibilityLevel(updatedDocument.getVisibilityLevel());
         document.setUpdatedAt(LocalDateTime.now());
 
@@ -133,18 +131,9 @@ public class DocumentServiceImpl implements DocumentService {
         return documentRepository.findByType(type);
     }
 
-    @Override
-    public List<Document> getDocumentsByTypes(List<DocumentType> types) {
-        log.debug("Fetching documents with types: {}", types);
-        return documentRepository.findByTypeIn(types);
-    }
+  
 
-    @Override
-    public List<Document> getDocumentsByCreator(Long userId) {
-        User creator = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-        return documentRepository.findByCreator(creator);
-    }
+   
 
     @Override
     public List<Document> getDocumentsByVisibilityLevel(String level) {
@@ -198,7 +187,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
         
         // Other users see documents based on visibility
-        return documentRepository.findByVisibilityLevelOrCreator("PUBLIC", user);
+        return documentRepository.findByVisibilityLevel("PUBLIC");
     }
 
     @Override
@@ -224,5 +213,29 @@ public class DocumentServiceImpl implements DocumentService {
         
         // Document visibility level determines access
         return document.getVisibilityLevel().equals("PUBLIC");
+    }
+
+    @Override
+    public List<Document> getDocumentsByTypes(List<DocumentType> types) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDocumentsByTypes'");
+    }
+
+    @Override
+    public List<Document> getDocumentsByCreator(Long userId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDocumentsByCreator'");
+    }
+
+    @Override
+    public void removeDocumentFromFormation(Long documentId, Long formationId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removeDocumentFromFormation'");
+    }
+
+    @Override
+    public void assignDocumentToFormation(Long documentId, Long formationId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'assignDocumentToFormation'");
     }
 }

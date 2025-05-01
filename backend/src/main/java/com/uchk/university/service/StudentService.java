@@ -3,6 +3,7 @@ import com.uchk.university.repository.UserRepository;
 import com.uchk.university.exception.DuplicateResourceException;
 
 import com.uchk.university.dto.StudentDto;
+import com.uchk.university.dto.UserDto;
 import com.uchk.university.entity.Formation;
 import com.uchk.university.entity.Role;
 import com.uchk.university.entity.Student;
@@ -17,8 +18,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate; 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -46,12 +49,12 @@ public class StudentService {
     @Transactional
     public Student createStudent(StudentDto studentDto) {
         // Check for existing username
-        if (userRepository.existsByUsername(studentDto.getUsername())) {
+        if (userRepository.existsByUsername(studentDto.getFirstName())) {
             throw new DuplicateResourceException("Username already exists");
         }
         // Create user account first
-        User user = userService.createUser(new com.uchk.university.dto.UserDto(
-                studentDto.getUsername(),
+        User user = userService.createUser(new UserDto(
+                null, studentDto.getFirstName(),
                 studentDto.getPassword(),
                 studentDto.getEmail(),
                 Role.STUDENT,
@@ -59,14 +62,6 @@ public class StudentService {
         ));
         
         logger.info("User created with ID: {}", user.getId());
-
-        // Get formation if provided
-        Formation formation = null;
-        if (studentDto.getFormationId() != null) {
-            formation = formationRepository.findById(studentDto.getFormationId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + studentDto.getFormationId()));
-            logger.info("Found formation with ID: {}", formation.getId());
-        }
 
         // Create student profile
         Student student = new Student();
@@ -77,13 +72,14 @@ public class StudentService {
 
         // Convert java.util.Date to LocalDate if not null
         if (studentDto.getBirthDate() != null) {
-            student.setBirthDate(studentDto.getBirthDate().toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate());
+            student.setBirthDate(LocalDate.from(studentDto.getBirthDate().toInstant().atZone(ZoneId.systemDefault())));
         } else {
             student.setBirthDate(null);
         }
 
+        Formation formation = formationRepository.findById(((Long) studentDto.getFormationId()))
+        .orElseThrow(() -> new ResourceNotFoundException("Formation not found with ID: " + studentDto.getFormationId()));
+        
         student.setCurrentFormation(formation);
         student.setPromo(studentDto.getPromo());
         student.setStartYear(studentDto.getStartYear());
@@ -104,14 +100,17 @@ public class StudentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with studentId: " + studentId));
     }
 
+    public Student getStudentByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        
+     
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
     }
 
     public List<Student> getStudentsByFormation(Long formationId) {
-        Formation formation = formationRepository.findById(formationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
-        return studentRepository.findByCurrentFormation(formation);
+        return studentRepository.findByCurrentFormationId(formationId);
     }
 
     public List<Student> getStudentsByPromo(String promo) {
@@ -123,25 +122,23 @@ public class StudentService {
         Student student = getStudentById(id);
 
         student.setFirstName(studentDto.getFirstName());
-        student.setLastName(studentDto.getLastName());
+    student.setLastName(studentDto.getLastName());
 
-        // Convert java.util.Date to LocalDate if not null
-        if (studentDto.getBirthDate() != null) {
-            student.setBirthDate(studentDto.getBirthDate().toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate());
-        } else {
-            student.setBirthDate(null);
-        }
+    // Convert java.util.Date to LocalDate if not null
+    if (studentDto.getBirthDate() != null) {
+        student.setBirthDate(LocalDate.from(studentDto.getBirthDate().toInstant().atZone(ZoneId.systemDefault())));
+    } else {
+        student.setBirthDate(null);
+    }
 
-        student.setPromo(studentDto.getPromo());
-        student.setStartYear(studentDto.getStartYear());
-        student.setEndYear(studentDto.getEndYear());
+    student.setPromo(studentDto.getPromo());
+    student.setStartYear(studentDto.getStartYear());
+    student.setEndYear(studentDto.getEndYear());
 
-        // Update Formation if provided
+        // Update formation if formationId is provided
         if (studentDto.getFormationId() != null) {
             Formation formation = formationRepository.findById(studentDto.getFormationId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + studentDto.getFormationId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + studentDto.getFormationId()));
             student.setCurrentFormation(formation);
         }
 
@@ -156,10 +153,5 @@ public class StudentService {
     }
   
 
-    @Transactional(readOnly = true)
-    public Student getStudentByUsername(String username) {
-        User user = userService.getUserByUsername(username);
-        return studentRepository.findByUser(user)
-            .orElseThrow(() -> new ResourceNotFoundException("Student not found for username: " + username));
-    }
+  
 }

@@ -50,4 +50,18 @@ protected void onUpdate() {
 
     // Champ de visibilité pour contrôler qui peut voir le document
     private String visibilityLevel;
+
+    public void setType(DocumentType type) {
+        this.type = type;
+    }
+
+    public void setVisibilityLevel(Integer visibilityLevel2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setVisibilityLevel'");
+    }
+
+    public void setVisibilityLevel(String visibilityLevel2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setVisibilityLevel'");
+    }
 }

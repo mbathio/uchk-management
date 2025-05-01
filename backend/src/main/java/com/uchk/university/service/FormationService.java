@@ -1,5 +1,6 @@
 package com.uchk.university.service;
 
+import com.uchk.university.dto.FormationDto;
 import com.uchk.university.entity.Formation;
 import com.uchk.university.entity.Staff;
 import com.uchk.university.exception.ResourceNotFoundException;
@@ -56,21 +57,21 @@ public class FormationService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
-    public Formation updateFormation(Long id, Formation formationDetails) {
+    public Formation updateFormation(Long id, FormationDto formationDto) {
         Formation formation = getFormationById(id);
         
         // Validate the updated formation data
-        validateFormation(formationDetails);
+        validateFormation(formationDto);
         
         // Update the formation properties
-        formation.setName(formationDetails.getName());
-        formation.setType(formationDetails.getType());
-        formation.setLevel(formationDetails.getLevel());
-        formation.setStartDate(formationDetails.getStartDate());
-        formation.setEndDate(formationDetails.getEndDate());
-        formation.setDescription(formationDetails.getDescription());
-        formation.setFundingAmount(formationDetails.getFundingAmount());
-        formation.setFundingType(formationDetails.getFundingType());
+        formation.setName(formationDto.getName());
+        formation.setType(formationDto.getType());
+        formation.setLevel(formationDto.getLevel());
+        formation.setStartDate(formationDto.getStartDate());
+        formation.setEndDate(formationDto.getEndDate());
+        formation.setDescription(formationDto.getDescription());
+        formation.setFundingAmount(formationDto.getFundingAmount());
+        formation.setFundingType(formationDto.getFundingType());
         
         return formationRepository.save(formation);
     }
@@ -83,11 +84,7 @@ public class FormationService {
         formationRepository.delete(formation);
     }
 
-    @Transactional(readOnly = true)
-    public Formation getFormationByStudentId(Long studentId) {
-        return formationRepository.findByStudentId(studentId)
-            .orElseThrow(() -> new ResourceNotFoundException("Formation not found for student id: " + studentId));
-    }
+   
     
     /**
      * Get the schedule for a specific formation
@@ -136,6 +133,25 @@ public class FormationService {
         }
     }
 
+    private void validateFormation(FormationDto formationDto) {
+        // Validate FormationDto specific checks
+        if (formationDto.getName() == null || formationDto.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Formation name cannot be empty");
+        }
+        
+        if (formationDto.getType() == null || formationDto.getType().trim().isEmpty()) {
+            throw new IllegalArgumentException("Formation type cannot be empty");
+        }
+        
+        if (formationDto.getStartDate() == null) {
+            throw new IllegalArgumentException("Start date is required");
+        }
+        
+        if (formationDto.getEndDate() != null && formationDto.getEndDate().isBefore(formationDto.getStartDate())) {
+            throw new IllegalArgumentException("End date cannot be before start date");
+        }
+    }
+
     public void assignStaffToFormation(Long formationId, Long staffId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'assignStaffToFormation'");
@@ -145,4 +161,11 @@ public class FormationService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'removeStaffFromFormation'");
     }
+
+    public Formation createFormation(FormationDto formationDto) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createFormation'");
+    }
+
+    
 }

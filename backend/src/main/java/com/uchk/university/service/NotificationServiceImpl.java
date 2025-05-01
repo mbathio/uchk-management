@@ -29,7 +29,6 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = new Notification();
         notification.setUser(user);
         notification.setMessage(message);
-        notification.setType(type);
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
         

@@ -24,4 +24,6 @@ public interface DocumentService {
     List<Document> getDocumentsByTypes(List<DocumentType> types);
     List<Document> getDocumentsByCreator(Long userId);
     List<Document> getDocumentsByVisibilityLevel(String level);
+    void removeDocumentFromFormation(Long documentId, Long formationId);
+    void assignDocumentToFormation(Long documentId, Long formationId);
 }

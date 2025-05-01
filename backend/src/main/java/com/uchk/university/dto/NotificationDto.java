@@ -1,25 +1,31 @@
 package com.uchk.university.dto;
 
-import com.uchk.university.entity.NotificationType;
-import com.uchk.university.entity.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationDto {  // Changed from NotificationDTO to NotificationDto
-    public Long id;
-    public String message;
-    public NotificationType type;
-    public boolean read;
-    public LocalDateTime createdAt;
-    public User user;
-
+public class NotificationDto {
+    
+    private Long id;
+    
+    @NotNull(message = "User ID is required")
+    private Long userId;
+    
+    @NotBlank(message = "Message is required")
+    @Size(max = 500, message = "Message must not exceed 500 characters")
+    private String message;
+    
+    @NotBlank(message = "Type is required")
+    @Size(max = 50, message = "Type must not exceed 50 characters")
+    private String type;
+    
+    private boolean read;
 }
-

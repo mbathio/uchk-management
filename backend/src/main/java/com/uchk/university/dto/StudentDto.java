@@ -1,68 +1,90 @@
 package com.uchk.university.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.*;
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudentDto {
     
-    @NotEmpty(message = "Username is required")
-    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
-    private String username;
+    private Long id;
     
-    @NotEmpty(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
-    private String password;
+    private Long userId;
     
-    @NotEmpty(message = "Email is required")
-    @Email(message = "Email should be valid")
-    private String email;
-    
-    @NotEmpty(message = "Student ID is required")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Student ID should be alphanumeric")
+    @NotBlank(message = "Student ID is required")
+    @Size(max = 20, message = "Student ID must not exceed 20 characters")
     private String studentId;
     
-    @NotEmpty(message = "First name is required")
-    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
+    @NotBlank(message = "First name is required")
+    @Size(max = 50, message = "First name must not exceed 50 characters")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\s'-]+$", message = "First name must contain only letters, spaces, hyphens and apostrophes")
     private String firstName;
     
-    @NotEmpty(message = "Last name is required")
-    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
+    @NotBlank(message = "Last name is required")
+    @Size(max = 50, message = "Last name must not exceed 50 characters")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\s'-]+$", message = "Last name must contain only letters, spaces, hyphens and apostrophes")
     private String lastName;
     
-    @PastOrPresent(message = "Birth date must be in the past or present")
-    private Date birthDate;
+    @NotNull(message = "Birth date is required")
+    private LocalDate birthDate;
     
-    @Positive(message = "Formation ID must be a positive number")
-    private Long formationId;
+    private Long currentFormationId;
     
-    @Size(max = 10, message = "Promo must be less than 10 characters")
+    @NotBlank(message = "Promo is required")
+    @Size(max = 20, message = "Promo must not exceed 20 characters")
     private String promo;
     
-    @Min(value = 1900, message = "Start year must be after 1900")
-    @Max(value = 2100, message = "Start year must be before 2100")
+    @NotNull(message = "Start year is required")
     private Integer startYear;
     
-    @Min(value = 1900, message = "End year must be after 1900")
-    @Max(value = 2100, message = "End year must be before 2100")
     private Integer endYear;
+    
+    private List<Long> formationHistoryIds;
 
-    // Explicitly add getter methods for service layer
-    public String getUsername() { return username; }
-    public String getPassword() { return password; }
-    public String getEmail() { return email; }
-    public String getStudentId() { return studentId; }
-    public String getFirstName() { return firstName; }
-    public String getLastName() { return lastName; }
-    public Date getBirthDate() { return birthDate; }
-    public Long getFormationId() { return formationId; }
-    public String getPromo() { return promo; }
-    public Integer getStartYear() { return startYear; }
-    public Integer getEndYear() { return endYear; }
+    public void setFormationId(Long id2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setFormationId'");
+    }
+
+    public void setFormationName(String name) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setFormationName'");
+    }
+
+    public void setBirthDate(Date from) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setBirthDate'");
+    }
+
+    public void setEmail(String email) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setEmail'");
+    }
+
+    public String getPassword() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPassword'");
+    }
+
+    public String getEmail() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getEmail'");
+    }
+
+    public Object getFormationId() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getFormationId'");
+    }
 }

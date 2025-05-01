@@ -89,7 +89,7 @@ public class DocumentController {
             Document document = new Document();
             document.setTitle(documentDto.getTitle());
             document.setDescription(documentDto.getDescription());
-            document.setType(documentDto.getType());
+            document.setType(DocumentType.valueOf(documentDto.getType()));
             document.setVisibilityLevel(documentDto.getVisibilityLevel());
             
             Document createdDocument = documentService.createDocument(document, user.getId(), file);
@@ -125,7 +125,7 @@ public class DocumentController {
             document.setId(id);
             document.setTitle(documentDto.getTitle());
             document.setDescription(documentDto.getDescription());
-            document.setType(documentDto.getType());
+            document.setType(DocumentType.valueOf(documentDto.getType()));
             document.setVisibilityLevel(documentDto.getVisibilityLevel());
             
             Document updatedDocument = documentService.updateDocument(id, document, file);

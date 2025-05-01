@@ -34,7 +34,7 @@ public class AuthService {
             User user = userRepository.findByUsername(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             
-            return new LoginResponse(token, user.getUsername(), user.getEmail(), user.getRole());
+            return new LoginResponse(token, user.getUsername(), user.getEmail(), user.getRole(), user.getId(), null);
         } catch (BadCredentialsException e) {
             // Log the specific authentication error
             log.error("Authentication failed: Bad credentials for user {}", loginRequest.getUsername());

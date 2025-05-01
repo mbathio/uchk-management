@@ -1,20 +1,18 @@
 package com.uchk.university.service;
 
-import com.uchk.university.entity.Role;
 import com.uchk.university.entity.Staff;
 import com.uchk.university.entity.User;
 import com.uchk.university.entity.Formation;
 import com.uchk.university.dto.StaffDto;
+import com.uchk.university.dto.UserDto;
 import com.uchk.university.exception.ResourceNotFoundException;
 import com.uchk.university.repository.StaffRepository;
-import com.uchk.university.service.UserService;
 import com.uchk.university.repository.FormationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,11 +24,10 @@ public class StaffService {
     @Transactional
     public Staff createStaff(StaffDto staffDto) {
         // Create user account first
-        User user = userService.createUser(new com.uchk.university.dto.UserDto(
-                staffDto.getUsername(),
+        User user = userService.createUser(new UserDto(
+                null, staffDto.getFirstName(),
                 staffDto.getPassword(),
-                staffDto.getEmail(),
-                staffDto.getRole()
+                staffDto.getEmail()
         ));
 
         // Create staff profile
@@ -81,7 +78,7 @@ public class StaffService {
         // Update user details if needed
         if (staffDto.getEmail() != null || staffDto.getPassword() != null || staffDto.getRole() != null) {
             User user = staff.getUser();
-            com.uchk.university.dto.UserDto userDto = new com.uchk.university.dto.UserDto(
+            UserDto userDto = new UserDto(
                     user.getUsername(),
                     staffDto.getPassword(),
                     staffDto.getEmail() != null ? staffDto.getEmail() : user.getEmail(),
@@ -114,6 +111,6 @@ public class StaffService {
         Formation formation = formationRepository.findById(formationId)
             .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
         
-        return staffRepository.findByFormations(formation);
+        return staffRepository.findByFormationId(formation);
     }
 }

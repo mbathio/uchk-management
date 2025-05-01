@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -25,6 +26,6 @@ public class Formation {
     private LocalDate startDate;
     private LocalDate endDate;
     private String description;
-    private Double fundingAmount;
+    private BigDecimal fundingAmount;
     private String fundingType;
 }

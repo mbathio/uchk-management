@@ -2,93 +2,124 @@ package com.uchk.university.controller;
 
 import com.uchk.university.dto.StudentDto;
 import com.uchk.university.entity.Student;
+import com.uchk.university.security.SecurityUtils;
 import com.uchk.university.service.StudentService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/students")
+@RequestMapping("/students")
 @RequiredArgsConstructor
 public class StudentController {
     private final StudentService studentService;
-    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
+    private final SecurityUtils securityUtils;
+
+    @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ADMINISTRATION', 'FORMATION_MANAGER')")
+    public ResponseEntity<StudentDto> createStudent(@jakarta.validation.Valid @RequestBody StudentDto studentDto) {
+        Student student = studentService.createStudent(studentDto);
+        return new ResponseEntity<>(convertToDto(student), HttpStatus.CREATED);
+    }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'FORMATION_MANAGER') or @studentService.isCurrentUserStudent(#id)")
-    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
-        return ResponseEntity.ok(studentService.getStudentById(id));
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ADMINISTRATION', 'FORMATION_MANAGER', 'TEACHER') or " +
+                  "@studentService.isCurrentUserStudent(#id)")
+    public ResponseEntity<StudentDto> getStudentById(@PathVariable Long id) {
+        Student student = studentService.getStudentById(id);
+        return ResponseEntity.ok(convertToDto(student));
     }
 
     @GetMapping("/studentId/{studentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'FORMATION_MANAGER')")
-    public ResponseEntity<Student> getStudentByStudentId(@PathVariable String studentId) {
-        return ResponseEntity.ok(studentService.getStudentByStudentId(studentId));
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ADMINISTRATION', 'FORMATION_MANAGER', 'TEACHER')")
+    public ResponseEntity<StudentDto> getStudentByStudentId(@PathVariable String studentId) {
+        Student student = studentService.getStudentByStudentId(studentId);
+        return ResponseEntity.ok(convertToDto(student));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'FORMATION_MANAGER')")
-    public ResponseEntity<List<Student>> getAllStudents() {
-        return ResponseEntity.ok(studentService.getAllStudents());
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ADMINISTRATION', 'FORMATION_MANAGER', 'TEACHER')")
+    public ResponseEntity<List<StudentDto>> getAllStudents() {
+        List<Student> students = studentService.getAllStudents();
+        List<StudentDto> studentDtos = students.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(studentDtos);
     }
 
     @GetMapping("/formation/{formationId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'FORMATION_MANAGER')")
-    public ResponseEntity<List<Student>> getStudentsByFormation(@PathVariable Long formationId) {
-        return ResponseEntity.ok(studentService.getStudentsByFormation(formationId));
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ADMINISTRATION', 'FORMATION_MANAGER', 'TEACHER')")
+    public ResponseEntity<List<StudentDto>> getStudentsByFormation(@PathVariable Long formationId) {
+        List<Student> students = studentService.getStudentsByFormation(formationId);
+        List<StudentDto> studentDtos = students.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(studentDtos);
     }
 
     @GetMapping("/promo/{promo}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'FORMATION_MANAGER')")
-    public ResponseEntity<List<Student>> getStudentsByPromo(@PathVariable String promo) {
-        return ResponseEntity.ok(studentService.getStudentsByPromo(promo));
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ADMINISTRATION', 'FORMATION_MANAGER', 'TEACHER')")
+    public ResponseEntity<List<StudentDto>> getStudentsByPromo(@PathVariable String promo) {
+        List<Student> students = studentService.getStudentsByPromo(promo);
+        List<StudentDto> studentDtos = students.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(studentDtos);
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Student> createStudent(@Valid @RequestBody StudentDto studentDto, BindingResult bindingResult) {
-        logger.info("Creating student with data: {}", studentDto);
-        
-        // Validate input
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.toList());
-            
-            logger.error("Validation errors: {}", errors);
-            throw new IllegalArgumentException("Invalid student data: " + String.join(", ", errors));
-        }
-        
-        try {
-            Student created = studentService.createStudent(studentDto);
-            logger.info("Student created successfully with ID: {}", created.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (Exception e) {
-            logger.error("Failed to create student: {}", e.getMessage(), e);
-            throw e;
-        }
+    @GetMapping("/me")
+    @PreAuthorize("hasAuthority('STUDENT')")
+    public ResponseEntity<StudentDto> getCurrentStudentProfile() {
+        String username = securityUtils.getCurrentUsername();
+        Student student = studentService.getStudentByUsername(username);
+        return ResponseEntity.ok(convertToDto(student));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @studentService.isCurrentUserStudent(#id)")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @Valid @RequestBody StudentDto studentDto) {
-        return ResponseEntity.ok(studentService.updateStudent(id, studentDto));
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ADMINISTRATION', 'FORMATION_MANAGER') or " +
+                 "@studentService.isCurrentUserStudent(#id)")
+    public ResponseEntity<StudentDto> updateStudent(@PathVariable Long id, @jakarta.validation.Valid @RequestBody StudentDto studentDto) {
+        Student student = studentService.updateStudent(id, studentDto);
+        return ResponseEntity.ok(convertToDto(student));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ADMINISTRATION')")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private StudentDto convertToDto(Student student) {
+        StudentDto dto = new StudentDto();
+        dto.setId(student.getId());
+        dto.setFirstName(student.getUser().getUsername());
+        dto.setEmail(student.getUser().getEmail());
+        dto.setStudentId(student.getStudentId());
+        dto.setFirstName(student.getFirstName());
+        dto.setLastName(student.getLastName());
+        
+        // Convert LocalDate to java.util.Date if not null
+        if (student.getBirthDate() != null) {
+            dto.setBirthDate(java.util.Date.from(student.getBirthDate().atStartOfDay()
+                .atZone(java.time.ZoneId.systemDefault())
+                .toInstant()));
+        }
+        
+        if (student.getCurrentFormation() != null) {
+            dto.setFormationId(student.getCurrentFormation().getId());
+            dto.setFormationName(student.getCurrentFormation().getName());
+        }
+        
+        dto.setPromo(student.getPromo());
+        dto.setStartYear(student.getStartYear());
+        dto.setEndYear(student.getEndYear());
+        
+        return dto;
     }
 }
