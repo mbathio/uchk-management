@@ -22,9 +22,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     
     List<Document> findByCreatedAtAfter(LocalDateTime date);
     
-    @Query("SELECT d FROM Document d JOIN d.formations f WHERE f.id = :formationId")
-    List<Document> findByFormationId(@Param("formationId") Long formationId);
-    
     @Query("SELECT d FROM Document d WHERE LOWER(d.title) LIKE LOWER(CONCAT('%', :search, '%')) " +
            "OR LOWER(d.description) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<Document> searchDocuments(@Param("search") String search);
@@ -33,4 +30,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByMaxVisibilityLevel(@Param("visibilityLevel") Integer visibilityLevel);
     
     boolean existsByTitle(String title);
+    
+    // Removed method findByFormationId as Document has no formations relationship
 }

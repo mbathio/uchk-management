@@ -5,7 +5,6 @@ import com.uchk.university.entity.Document;
 import com.uchk.university.entity.DocumentType;
 import com.uchk.university.entity.User;
 import com.uchk.university.exception.ResourceNotFoundException;
-import com.uchk.university.security.CurrentUser;
 import com.uchk.university.service.DocumentService;
 import com.uchk.university.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;

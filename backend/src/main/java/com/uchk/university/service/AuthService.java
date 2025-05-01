@@ -4,7 +4,7 @@ import com.uchk.university.dto.LoginRequest;
 import com.uchk.university.dto.LoginResponse;
 import com.uchk.university.entity.User;
 import com.uchk.university.repository.UserRepository;
-import com.uchk.university.security.JwtTokenUtil;
+import com.uchk.university.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,13 +13,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import com.uchk.university.security.JwtUtil;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtUtil jwtTokenUtil;
     private final UserRepository userRepository;
 
     public LoginResponse login(LoginRequest loginRequest) {

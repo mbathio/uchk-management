@@ -11,42 +11,16 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class SecurityUtils {
-    
+
     private final UserService userService;
-    
-    /**
-     * Check if the current authenticated user is the specified user ID
-     */
-    public boolean isCurrentUser(Long userId) {
-        String currentUsername = getCurrentUsername();
-        if (currentUsername == null) {
-            return false;
-        }
-        
-        try {
-            User user = userService.getUserById(userId);
-            return user != null && user.getUsername().equals(currentUsername);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
-    /**
-     * Check if the current authenticated user has the specified username
-     */
-    public boolean isCurrentUsername(String username) {
-        String currentUsername = getCurrentUsername();
-        return currentUsername != null && currentUsername.equals(username);
-    }
     
     /**
      * Get the current authenticated username
      */
-    public static String getCurrentUsername() {
+    public String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
-        if (authentication == null || !authentication.isAuthenticated() || 
-            "anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
         
@@ -69,5 +43,21 @@ public class SecurityUtils {
         }
         
         return userService.getUserByUsername(username);
+    }
+    
+    /**
+     * Check if the current user is the owner of the requested user ID
+     */
+    public boolean isCurrentUser(Long userId) {
+        User currentUser = getCurrentUser();
+        return currentUser != null && currentUser.getId().equals(userId);
+    }
+    
+    /**
+     * Check if the current user has the given username
+     */
+    public boolean isCurrentUsername(String username) {
+        String currentUsername = getCurrentUsername();
+        return currentUsername != null && currentUsername.equals(username);
     }
 }

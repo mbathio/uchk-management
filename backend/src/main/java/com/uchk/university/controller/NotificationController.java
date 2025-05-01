@@ -2,7 +2,6 @@ package com.uchk.university.controller;
 
 import com.uchk.university.entity.Notification;
 import com.uchk.university.entity.User;
-import com.uchk.university.exception.ResourceNotFoundException;
 import com.uchk.university.service.NotificationService;
 import com.uchk.university.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;

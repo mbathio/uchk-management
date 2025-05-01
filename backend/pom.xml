@@ -100,6 +100,20 @@
 			<artifactId>spring-boot-starter-logging</artifactId>
 		</dependency>
         
+        <!-- Logging Dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+        </dependency>
+
         <!-- Ajout de Spring AOP pour les aspects comme l'audit logging -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -191,6 +205,9 @@
 							<version>1.18.24</version>
 						</path>
 					</annotationProcessorPaths>
+					<compilerArgs>
+						<arg>-Xdiags:verbose</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
