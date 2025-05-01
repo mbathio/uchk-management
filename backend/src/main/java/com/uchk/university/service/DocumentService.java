@@ -22,7 +22,7 @@ public interface DocumentService {
     List<Document> getAllDocuments();
     List<Document> getDocumentsByType(DocumentType type);
     List<Document> getDocumentsByTypes(List<DocumentType> types);
-    List<Document> getDocumentsByCreator(Long userId);
+    List<Document> getDocumentsByCreator(Long creatorId);
     List<Document> getDocumentsByVisibilityLevel(String level);
     void removeDocumentFromFormation(Long documentId, Long formationId);
     void assignDocumentToFormation(Long documentId, Long formationId);

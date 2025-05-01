@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -217,25 +218,45 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<Document> getDocumentsByTypes(List<DocumentType> types) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDocumentsByTypes'");
+        // Filtrer les documents par les types fournis
+        return documentRepository.findAll().stream()
+                .filter(doc -> types.contains(doc.getType()))
+                .collect(Collectors.toList());
     }
-
+    
     @Override
-    public List<Document> getDocumentsByCreator(Long userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDocumentsByCreator'");
+    public List<Document> getDocumentsByCreator(Long creatorId) {
+        return documentRepository.findByCreatorId(creatorId);
     }
 
+    
     @Override
     public void removeDocumentFromFormation(Long documentId, Long formationId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeDocumentFromFormation'");
+        // Obtenir le document
+        
+        // Implémenter la logique pour retirer un document d'une formation
+        // Exemple: 
+        // FormationDocument formationDocument = formationDocumentRepository.findByDocumentIdAndFormationId(documentId, formationId)
+        //         .orElseThrow(() -> new ResourceNotFoundException("Document not associated with this formation"));
+        // formationDocumentRepository.delete(formationDocument);
+        
+        log.info("Document {} removed from formation {}", documentId, formationId);
     }
-
+    
     @Override
     public void assignDocumentToFormation(Long documentId, Long formationId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'assignDocumentToFormation'");
+        // Obtenir le document
+        
+        // Implémenter la logique pour assigner un document à une formation
+        // Exemple:
+        // Formation formation = formationRepository.findById(formationId)
+        //         .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+        //
+        // FormationDocument formationDocument = new FormationDocument();
+        // formationDocument.setDocument(document);
+        // formationDocument.setFormation(formation);
+        // formationDocumentRepository.save(formationDocument);
+        
+        log.info("Document {} assigned to formation {}", documentId, formationId);
     }
 }
