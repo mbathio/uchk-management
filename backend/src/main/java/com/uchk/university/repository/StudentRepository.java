@@ -15,7 +15,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     
     Optional<Student> findByStudentId(String studentId);
     
-    Optional<Student> findByUser_Id(Long userId); //  navigation dans l'objet "user"
+    Optional<Student> findByUser_Id(Long userId); // navigation dans l'objet "user"
     
     List<Student> findByPromo(String promo);
     
@@ -23,7 +23,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     
     List<Student> findByCurrentFormationId(Long currentFormationId);
     
-    @Query("SELECT s FROM Student s JOIN s.formationHistory f WHERE f.id = :formationId")
+    // Modified query - using currentFormation instead of formationHistory
+    @Query("SELECT s FROM Student s WHERE s.currentFormation.id = :formationId")
     List<Student> findByFormationId(@Param("formationId") Long formationId);
     
     @Query("SELECT s FROM Student s WHERE LOWER(s.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +

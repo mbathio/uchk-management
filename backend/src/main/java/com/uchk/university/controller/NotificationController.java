@@ -121,19 +121,6 @@ public class NotificationController {
         }
     }
     
-    @DeleteMapping("/user")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Supprimer toutes les notifications d'un utilisateur")
-    public ResponseEntity<Void> deleteAllNotificationsForUser(@AuthenticationPrincipal UserDetails userDetails) {
-        try {
-            User user = userService.getUserByUsername(userDetails.getUsername());
-            notificationService.getNotificationsForUser(user.getId());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            log.error("Error deleting all notifications for user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
     
     @DeleteMapping("/user")
     @PreAuthorize("isAuthenticated()")
