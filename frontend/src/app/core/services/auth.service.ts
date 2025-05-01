@@ -1,7 +1,7 @@
 // src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
-import { ApiService } from './api.service';
+import { ApiService } from '../api.service';
 import { LoginRequest, LoginResponse } from '../models/auth.model';
 import { User } from '../models/user.model';
 

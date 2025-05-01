@@ -40,7 +40,8 @@ public class StudentDto {
     @NotNull(message = "Birth date is required")
     private LocalDate birthDate;
     
-    private Long currentFormationId;
+    private Long formationId;  // Changed from currentFormationId for consistency with method names
+    private String formationName;
     
     @NotBlank(message = "Promo is required")
     @Size(max = 20, message = "Promo must not exceed 20 characters")
@@ -52,39 +53,37 @@ public class StudentDto {
     private Integer endYear;
     
     private List<Long> formationHistoryIds;
+    
+    private String email;
+    private String password;
 
-    public void setFormationId(Long id2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setFormationId'");
+    public void setFormationId(Long id) {
+        this.formationId = id;
+    }
+
+    public Long getFormationId() {
+        return this.formationId;
     }
 
     public void setFormationName(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setFormationName'");
+        this.formationName = name;
     }
 
-    public void setBirthDate(Date from) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setBirthDate'");
+    public void setBirthDate(Date date) {
+        if (date != null) {
+            this.birthDate = new java.sql.Date(date.getTime()).toLocalDate();
+        }
     }
 
     public void setEmail(String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setEmail'");
-    }
-
-    public String getPassword() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPassword'");
+        this.email = email;
     }
 
     public String getEmail() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEmail'");
+        return this.email;
     }
 
-    public Object getFormationId() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getFormationId'");
+    public String getPassword() {
+        return this.password;
     }
 }

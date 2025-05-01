@@ -22,7 +22,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-
 public class StudentService {
 
     private final StudentRepository studentRepository;
@@ -72,9 +71,12 @@ public class StudentService {
             student.setBirthDate(null);
         }
 
-        Formation formation = formationRepository.findById(((Number)studentDto.getFormationId()).longValue())
-                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + studentDto.getFormationId()));
-        student.setCurrentFormation(formation);
+        // Check if formationId is not null before attempting to get formation
+        if (studentDto.getFormationId() != null) {
+            Formation formation = formationRepository.findById(((Number)studentDto.getFormationId()).longValue())
+                    .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + studentDto.getFormationId()));
+            student.setCurrentFormation(formation);
+        }
 
         student.setPromo(studentDto.getPromo());
         student.setStartYear(studentDto.getStartYear());
@@ -86,32 +88,49 @@ public class StudentService {
     }
 
     public Student getStudentById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Student ID cannot be null");
+        }
         return studentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
     }
 
     public Student getStudentByStudentId(String studentId) {
+        if (studentId == null || studentId.isEmpty()) {
+            throw new IllegalArgumentException("Student ID cannot be null or empty");
+        }
         return studentRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with studentId: " + studentId));
     }
 
     public Student getStudentByUsername(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
 
-        // Find student by user ID instead of using a non-existent method
+        // Find student by user ID
         return studentRepository.findByUser_Id(user.getId())
-        .orElseThrow(() -> new ResourceNotFoundException("Student not found for user: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found for user: " + username));
     }
+    
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
     }
 
     public List<Student> getStudentsByFormation(Long formationId) {
+        if (formationId == null) {
+            throw new IllegalArgumentException("Formation ID cannot be null");
+        }
         return studentRepository.findByCurrentFormationId(formationId);
     }
 
     public List<Student> getStudentsByPromo(String promo) {
+        if (promo == null || promo.isEmpty()) {
+            throw new IllegalArgumentException("Promo cannot be null or empty");
+        }
         return studentRepository.findByPromo(promo);
     }
 

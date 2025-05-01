@@ -1,32 +1,50 @@
-// src/app/core/services/student.service.ts
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiService } from './api.service';
+import { ApiService } from '../api.service';
 import { Student } from '../models/student.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudentService {
-  constructor(private apiService: ApiService) {}
+  private baseUrl = '/students';
 
-  getAllStudents(): Observable<Student[]> {
-    return this.apiService.get<Student[]>('students');
-  }
+  constructor(private http: HttpClient, private apiService: ApiService) { }
 
   getStudentById(id: number): Observable<Student> {
-    return this.apiService.get<Student>(`students/${id}`);
+    return this.apiService.get<Student>(`${this.baseUrl}/${id}`);
   }
 
-  createStudent(student: Partial<Student>): Observable<Student> {
-    return this.apiService.post<Student>('students', student);
+  getStudentByStudentId(studentId: string): Observable<Student> {
+    return this.apiService.get<Student>(`${this.baseUrl}/studentId/${studentId}`);
   }
 
-  updateStudent(id: number, student: Partial<Student>): Observable<Student> {
-    return this.apiService.put<Student>(`students/${id}`, student);
+  getCurrentStudent(): Observable<Student> {
+    return this.apiService.get<Student>(`${this.baseUrl}/me`);
+  }
+
+  getAllStudents(): Observable<Student[]> {
+    return this.apiService.get<Student[]>(`${this.baseUrl}`);
+  }
+
+  getStudentsByFormation(formationId: number): Observable<Student[]> {
+    return this.apiService.get<Student[]>(`${this.baseUrl}/formation/${formationId}`);
+  }
+
+  getStudentsByPromo(promo: string): Observable<Student[]> {
+    return this.apiService.get<Student[]>(`${this.baseUrl}/promo/${promo}`);
+  }
+
+  createStudent(student: Student): Observable<Student> {
+    return this.apiService.post<Student>(`${this.baseUrl}`, student);
+  }
+
+  updateStudent(id: number, student: Student): Observable<Student> {
+    return this.apiService.put<Student>(`${this.baseUrl}/${id}`, student);
   }
 
   deleteStudent(id: number): Observable<void> {
-    return this.apiService.delete<void>(`students/${id}`);
+    return this.apiService.delete<void>(`${this.baseUrl}/${id}`);
   }
 }
