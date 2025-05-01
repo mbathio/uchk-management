@@ -46,19 +46,21 @@ public class StaffDto {
     private String contactInfo;
     
     private List<Long> formationIds;
+    
+    // Additional fields for user creation/management
+    private String email;
+    private String password;
+    private String role;
 
     public String getEmail() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEmail'");
+        return this.email;
     }
 
     public String getPassword() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPassword'");
+        return this.password;
     }
 
     public String getRole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRole'");
+        return this.role;
     }
 }

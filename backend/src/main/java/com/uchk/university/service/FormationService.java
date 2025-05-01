@@ -7,15 +7,18 @@ import com.uchk.university.exception.ResourceNotFoundException;
 import com.uchk.university.repository.FormationRepository;
 import com.uchk.university.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FormationService {
     private final FormationRepository formationRepository;
     private final StaffRepository staffRepository;
@@ -26,6 +29,39 @@ public class FormationService {
         // Validate the formation data
         validateFormation(formation);
         return formationRepository.save(formation);
+    }
+
+    @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
+    public Formation createFormation(FormationDto formationDto) {
+        // Create a new Formation entity from the DTO
+        Formation formation = new Formation();
+        formation.setName(formationDto.getName());
+        formation.setType(formationDto.getType());
+        formation.setLevel(formationDto.getLevel());
+        formation.setStartDate(formationDto.getStartDate());
+        formation.setEndDate(formationDto.getEndDate());
+        formation.setDescription(formationDto.getDescription());
+        formation.setFundingAmount(formationDto.getFundingAmount());
+        formation.setFundingType(formationDto.getFundingType());
+        
+        // Validate and save the formation
+        validateFormation(formation);
+        Formation savedFormation = formationRepository.save(formation);
+        
+        // Process related entities if present in the DTO
+        if (formationDto.getStaffIds() != null && !formationDto.getStaffIds().isEmpty()) {
+            formationDto.getStaffIds().forEach(staffId -> {
+                try {
+                    assignStaffToFormation(savedFormation.getId(), staffId);
+                } catch (Exception e) {
+                    log.warn("Failed to assign staff {} to formation {}: {}", 
+                             staffId, savedFormation.getId(), e.getMessage());
+                }
+            });
+        }
+        
+        return savedFormation;
     }
 
     @Transactional(readOnly = true)
@@ -84,7 +120,69 @@ public class FormationService {
         formationRepository.delete(formation);
     }
 
-   
+    @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
+    public void assignStaffToFormation(Long formationId, Long staffId) {
+        Formation formation = formationRepository.findById(formationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+        
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + staffId));
+        
+        // Check if the staff is already assigned to this formation
+        if (formation.getStaff() != null && formation.getStaff().contains(staff)) {
+            log.info("Staff {} is already assigned to formation {}", staffId, formationId);
+            return;
+        }
+        
+        // Add staff to formation
+        if (formation.getStaff() == null) {
+            formation.setStaff(new ArrayList<>());
+        }
+        formation.getStaff().add(staff);
+        
+        // Add formation to staff
+        if (staff.getFormations() == null) {
+            staff.setFormations(new ArrayList<>());
+        }
+        staff.getFormations().add(formation);
+        
+        // Save changes
+        formationRepository.save(formation);
+        staffRepository.save(staff);
+        
+        log.info("Staff {} assigned to formation {}", staffId, formationId);
+    }
+    
+    @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
+    public void removeStaffFromFormation(Long formationId, Long staffId) {
+        Formation formation = formationRepository.findById(formationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+        
+        Staff staff = staffRepository.findById(staffId)
+                .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + staffId));
+        
+        // Remove staff from formation
+        if (formation.getStaff() != null) {
+            boolean removed = formation.getStaff().removeIf(s -> s.getId().equals(staffId));
+            if (!removed) {
+                log.info("Staff {} was not assigned to formation {}", staffId, formationId);
+                return;
+            }
+        }
+        
+        // Remove formation from staff
+        if (staff.getFormations() != null) {
+            staff.getFormations().removeIf(f -> f.getId().equals(formationId));
+        }
+        
+        // Save changes
+        formationRepository.save(formation);
+        staffRepository.save(staff);
+        
+        log.info("Staff {} removed from formation {}", staffId, formationId);
+    }
     
     /**
      * Get the schedule for a specific formation
@@ -103,12 +201,12 @@ public class FormationService {
      * Get trainers/staff for a specific formation
      */
     @Transactional(readOnly = true)
-public List<Staff> getTrainersByFormationId(Long formationId) {
-    Formation formation = formationRepository.findById(formationId)
-        .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+    public List<Staff> getTrainersByFormationId(Long formationId) {
+        Formation formation = formationRepository.findById(formationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
 
-    return staffRepository.findByFormations(formation);
-}
+        return staffRepository.findByFormations(formation);
+    }
     
     private void validateFormation(Formation formation) {
         if (formation.getName() == null || formation.getName().trim().isEmpty()) {
@@ -151,21 +249,4 @@ public List<Staff> getTrainersByFormationId(Long formationId) {
             throw new IllegalArgumentException("End date cannot be before start date");
         }
     }
-
-    public void assignStaffToFormation(Long formationId, Long staffId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'assignStaffToFormation'");
-    }
-
-    public void removeStaffFromFormation(Long formationId, Long staffId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeStaffFromFormation'");
-    }
-
-    public Formation createFormation(FormationDto formationDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createFormation'");
-    }
-
-    
 }

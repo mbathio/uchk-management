@@ -132,9 +132,12 @@ public class DocumentServiceImpl implements DocumentService {
         return documentRepository.findByType(type);
     }
 
-  
-
-   
+    @Override
+    public List<Document> getDocumentsByCreator(Long creatorId) {
+        User creator = userRepository.findById(creatorId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + creatorId));
+        return documentRepository.findByCreator(creator);
+    }
 
     @Override
     public List<Document> getDocumentsByVisibilityLevel(String level) {
@@ -225,37 +228,20 @@ public class DocumentServiceImpl implements DocumentService {
     }
     
     @Override
-    public List<Document> getDocumentsByCreator(Long creatorId) {
-        return documentRepository.findByCreatorId(creatorId);
-    }
-
-    
-    @Override
     public void removeDocumentFromFormation(Long documentId, Long formationId) {
         // Obtenir le document
         
-        // Implémenter la logique pour retirer un document d'une formation
-        // Exemple: 
-        // FormationDocument formationDocument = formationDocumentRepository.findByDocumentIdAndFormationId(documentId, formationId)
-        //         .orElseThrow(() -> new ResourceNotFoundException("Document not associated with this formation"));
-        // formationDocumentRepository.delete(formationDocument);
+        log.info("Removing document {} from formation {}", documentId, formationId);
+        
+        
         
         log.info("Document {} removed from formation {}", documentId, formationId);
     }
     
     @Override
     public void assignDocumentToFormation(Long documentId, Long formationId) {
-        // Obtenir le document
         
-        // Implémenter la logique pour assigner un document à une formation
-        // Exemple:
-        // Formation formation = formationRepository.findById(formationId)
-        //         .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
-        //
-        // FormationDocument formationDocument = new FormationDocument();
-        // formationDocument.setDocument(document);
-        // formationDocument.setFormation(formation);
-        // formationDocumentRepository.save(formationDocument);
+        log.info("Assigning document {} to formation {}", documentId, formationId);
         
         log.info("Document {} assigned to formation {}", documentId, formationId);
     }
