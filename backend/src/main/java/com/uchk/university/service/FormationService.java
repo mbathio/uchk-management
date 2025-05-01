@@ -103,12 +103,12 @@ public class FormationService {
      * Get trainers/staff for a specific formation
      */
     @Transactional(readOnly = true)
-    public List<Staff> getTrainersByFormationId(Long formationId) {
-        Formation formation = formationRepository.findById(formationId)
-            .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
-        
-        return staffRepository.findByFormations(formation);
-    }
+public List<Staff> getTrainersByFormationId(Long formationId) {
+    Formation formation = formationRepository.findById(formationId)
+        .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+
+    return staffRepository.findByFormations(formation);
+}
     
     private void validateFormation(Formation formation) {
         if (formation.getName() == null || formation.getName().trim().isEmpty()) {

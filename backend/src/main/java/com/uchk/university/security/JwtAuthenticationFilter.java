@@ -1,7 +1,6 @@
 package com.uchk.university.security;
 
 import com.uchk.university.service.CustomUserDetailsService;
-import com.uchk.university.security.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

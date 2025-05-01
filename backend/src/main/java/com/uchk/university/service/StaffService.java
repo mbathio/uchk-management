@@ -107,10 +107,20 @@ public class StaffService {
     }
 
     @Transactional(readOnly = true)
-    public List<Staff> getTrainersByFormationId(Long formationId) {
-        Formation formation = formationRepository.findById(formationId)
-            .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
-        
-        return staffRepository.findByFormationId(formation);
+public List<Staff> getTrainersByFormationId(Long formationId) {
+    Formation formation = formationRepository.findById(formationId)
+        .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+    
+    return staffRepository.findByFormations_Name(formation.getName());
+}
+
+    @Transactional(readOnly = true)
+    public List<Staff> getTrainersByFormationName(String formationName) {
+        return staffRepository.findByFormations_Name(formationName);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Staff> getTrainersByFormation(Formation formation) {
+        return staffRepository.findByFormations(formation);
     }
 }

@@ -24,15 +24,15 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     
     List<Notification> findByCreatedAtAfter(LocalDateTime date);
     
-    @Query("SELECT n FROM Notification n WHERE n.userId = :userId ORDER BY n.createdAt DESC")
+    @Query("SELECT n FROM Notification n WHERE n.user.id = :userId ORDER BY n.createdAt DESC")
     List<Notification> findLatestByUserId(@Param("userId") Long userId);
     
     @Modifying
     @Transactional
-    @Query("UPDATE Notification n SET n.read = true WHERE n.userId = :userId")
+    @Query("UPDATE Notification n SET n.read = true WHERE n.user.id = :userId")
     void markAllAsReadForUser(@Param("userId") Long userId);
     
-    @Query("SELECT COUNT(n) FROM Notification n WHERE n.userId = :userId AND n.read = false")
+    @Query("SELECT COUNT(n) FROM Notification n WHERE n.user.id = :userId AND n.read = false")
     long countUnreadByUser(@Param("userId") Long userId);
 
     List<Notification> findByUserOrderByCreatedAtDesc(User user);

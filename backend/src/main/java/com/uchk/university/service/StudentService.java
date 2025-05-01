@@ -98,12 +98,11 @@ public class StudentService {
     public Student getStudentByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
-    
-        // Find student by user ID instead of using a non-existent method
-        return studentRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found for user: " + username));
-    }
 
+        // Find student by user ID instead of using a non-existent method
+        return studentRepository.findByUser_Id(user.getId())
+        .orElseThrow(() -> new ResourceNotFoundException("Student not found for user: " + username));
+    }
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
     }

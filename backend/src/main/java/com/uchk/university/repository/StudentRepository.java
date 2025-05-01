@@ -1,8 +1,6 @@
 package com.uchk.university.repository;
 
-import com.uchk.university.entity.Formation;
 import com.uchk.university.entity.Student;
-import com.uchk.university.entity.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +15,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     
     Optional<Student> findByStudentId(String studentId);
     
-    Optional<Student> findByUserId(Long userId);
+    Optional<Student> findByUser_Id(Long userId); //  navigation dans l'objet "user"
     
     List<Student> findByPromo(String promo);
     

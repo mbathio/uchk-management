@@ -1,33 +1,15 @@
 package com.uchk.university;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test")
-class UniversityManagementApplicationTests {
-    private static final Logger logger = LoggerFactory.getLogger(UniversityManagementApplicationTests.class);
-
-    @Autowired
-    private ApplicationContext context;
+@ActiveProfiles("test") // This ensures the application-test.properties is used
+public class UniversityManagementApplicationTests {
 
     @Test
     void contextLoads() {
-        logger.info("Starting context load test");
-        assertThat(context).isNotNull();
-        logger.info("Beans in context: {}", context.getBeanDefinitionCount());
-        
-        // Log bean names to help diagnose issues
-        String[] beanNames = context.getBeanDefinitionNames();
-        for (String beanName : beanNames) {
-            logger.debug("Bean: {}", beanName);
-        }
+        // This will now use the test profile properties
     }
 }
