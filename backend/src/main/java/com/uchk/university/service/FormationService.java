@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -120,38 +122,39 @@ public class FormationService {
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
-    public void assignStaffToFormation(Long formationId, Long staffId) {
-        Formation formation = formationRepository.findById(formationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
-        
-        Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + staffId));
-        
-        // Check if the staff is already assigned to this formation
-        if (formation.getStaff() != null && formation.getStaff().contains(staff)) {
-            log.info("Staff {} is already assigned to formation {}", staffId, formationId);
-            return;
-        }
-        
-        // Add staff to formation
-        if (formation.getStaff() == null) {
-            formation.setStaff(new ArrayList<>());
-        }
-        formation.getStaff().add(staff);
-        
-        // Add formation to staff
-        if (staff.getFormations() == null) {
-            staff.setFormations(new ArrayList<>());
-        }
-        staff.getFormations().add(formation);
-        
-        // Save changes
-        formationRepository.save(formation);
-        staffRepository.save(staff);
-        
-        log.info("Staff {} assigned to formation {}", staffId, formationId);
+@PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
+public void assignStaffToFormation(Long formationId, Long staffId) {
+    Formation formation = formationRepository.findById(formationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
+    
+    Staff staff = staffRepository.findById(staffId)
+            .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + staffId));
+    
+    // Check if the staff is already assigned to this formation
+    if (formation.getStaff() != null && formation.getStaff().contains(staff)) {
+        log.info("Staff {} is already assigned to formation {}", staffId, formationId);
+        return;
     }
+    
+    // Add staff to formation
+    if (formation.getStaff() == null) {
+        formation.setStaff(new ArrayList<>());
+    }
+    formation.getStaff().add(staff);
+    
+    // Add formation to staff
+    if (staff.getFormations() == null) {
+        // Create a HashSet instead of ArrayList to match the expected type
+        staff.setFormations(new HashSet<>());
+    }
+    staff.getFormations().add(formation);
+    
+    // Save changes
+    formationRepository.save(formation);
+    staffRepository.save(staff);
+    
+    log.info("Staff {} assigned to formation {}", staffId, formationId);
+}
     
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'FORMATION_MANAGER')")
@@ -204,8 +207,17 @@ public class FormationService {
         Formation formation = formationRepository.findById(formationId)
             .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + formationId));
 
-        return staffRepository.findByFormations(formation);
-    }
+  // Fix: Convert ArrayList to HashSet for setFormations method
+        List<Staff> trainers = staffRepository.findByFormations(formation);
+        for (Staff staff : trainers) {
+            if (staff.getFormations() == null) {
+                // Create a new HashSet instead of ArrayList to match the expected type
+                Set<Formation> formationSet = new HashSet<>(); 
+                formationSet.add(formation);
+                staff.setFormations(formationSet);
+            }
+        }
+        return trainers;    }
     
     private void validateFormation(Formation formation) {
         if (formation.getName() == null || formation.getName().trim().isEmpty()) {

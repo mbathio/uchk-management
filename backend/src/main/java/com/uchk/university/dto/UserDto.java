@@ -16,10 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDto {
     
-    public UserDto(String username2, String password2, Object object, Object object2) {
-        //TODO Auto-generated constructor stub
-    }
-
     private Long id;
     
     @NotBlank(message = "Username is required")

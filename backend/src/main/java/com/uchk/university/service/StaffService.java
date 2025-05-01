@@ -27,7 +27,7 @@ public class StaffService {
         User user = userService.createUser(new UserDto(
                 null, staffDto.getFirstName(),
                 staffDto.getPassword(),
-                staffDto.getEmail()
+                staffDto.getEmail(), null, false
         ));
 
         // Create staff profile
@@ -68,27 +68,28 @@ public class StaffService {
     @Transactional
     public Staff updateStaff(Long id, StaffDto staffDto) {
         Staff staff = getStaffById(id);
-        
+    
         staff.setFirstName(staffDto.getFirstName());
         staff.setLastName(staffDto.getLastName());
         staff.setPosition(staffDto.getPosition());
         staff.setDepartment(staffDto.getDepartment());
         staff.setContactInfo(staffDto.getContactInfo());
-        
-        // Update user details if needed
-        if (staffDto.getEmail() != null || staffDto.getPassword() != null || staffDto.getRole() != null) {
-            User user = staff.getUser();
-            UserDto userDto = new UserDto(
-                    user.getUsername(),
-                    staffDto.getPassword(),
-                    staffDto.getEmail() != null ? staffDto.getEmail() : user.getEmail(),
-                    staffDto.getRole() != null ? staffDto.getRole() : user.getRole()
-            );
-            userService.updateUser(user.getId(), userDto);
-        }
-        
+    
+        // Update user details
+        User user = staff.getUser();
+        UserDto userDto = UserDto.builder()
+        .id(user.getId())
+        .username(staffDto.getUsername() != null ? staffDto.getUsername() : user.getUsername())
+        .password(staffDto.getPassword() != null ? staffDto.getPassword() : user.getPassword())
+        .email(staffDto.getEmail() != null ? staffDto.getEmail() : user.getEmail())
+        .active(true)
+        .build();
+    
+    
+        userService.updateUser(user.getId(), userDto);
         return staffRepository.save(staff);
     }
+    
 
     @Transactional
     public void deleteStaff(Long id) {

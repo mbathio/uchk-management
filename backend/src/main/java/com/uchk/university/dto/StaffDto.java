@@ -45,6 +45,9 @@ public class StaffDto {
     @Size(max = 500, message = "Contact info must not exceed 500 characters")
     private String contactInfo;
     
+    @NotBlank(message = "Username is required")
+    private String username;
+    
     private List<Long> formationIds;
     
     // Additional fields for user creation/management
